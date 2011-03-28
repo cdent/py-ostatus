@@ -1,0 +1,10 @@
+
+A suite of libraries and command line tools for doing ostatus.
+
+Needed this to test things I'm doing with servers and I just 
+can't get node-ostatus to work without giving me o3 library
+problems. So I figured I'd port parts of it.
+
+This is no where close to working.
+
+Committing to get the ball rolling.
