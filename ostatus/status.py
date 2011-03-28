@@ -25,7 +25,10 @@ def status(identifier):
         raise StatusError('no links found to get status')
     else:
         entries = parse_feed(feed)
-        return entries[0]
+        if entries:
+            return entries[0]
+        else:
+            raise StatusError('no data for %s' % identifier)
 
 def _get_feed(uri):
     response, content = HTTP.request(uri)

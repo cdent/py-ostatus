@@ -10,7 +10,10 @@ def parse_feed(feed):
     for entry in entries:
         output = {}
         for child in entry.childNodes:
-            name = child.tagName
+            try:
+                name = child.tagName
+            except AttributeError:
+                continue
             if name in ['id', 'title', 'content', 'updated']:
                 output[name] = child.childNodes[0].data
         outputs.append(output)

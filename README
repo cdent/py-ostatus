@@ -5,6 +5,16 @@ Needed this to test things I'm doing with servers and I just
 can't get node-ostatus to work without giving me o3 library
 problems. So I figured I'd port parts of it.
 
-This is no where close to working.
+This has very limited functionality, thus far.
 
 Committing to get the ball rolling.
+
+Some command line scripts have been added: webfinger, profile and status.
+
+Each takes one or more webfinger addresses:
+
+    ./status evan@identi.ca
+
+or 
+
+    ./profile cdent@tiddlyspace
