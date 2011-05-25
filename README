@@ -17,4 +17,4 @@ Each takes one or more webfinger addresses:
 
 or 
 
-    ./profile cdent@tiddlyspace
+    ./profile cdent@tiddlyspace.com
