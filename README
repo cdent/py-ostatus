@@ -1,15 +1,14 @@
 
-A suite of libraries and command line tools for doing ostatus.
+A suite of Python libraries and command line tools for doing ostatus.
 
 Needed this to test things I'm doing with servers and I just 
 can't get node-ostatus to work without giving me o3 library
-problems. So I figured I'd port parts of it.
+problems. So I figured I'd port parts of it to Python.
 
 This has very limited functionality, thus far.
 
-Committing to get the ball rolling.
-
-Some command line scripts have been added: webfinger, profile and status.
+Some command line scripts have been added: webfinger, profile, status and
+hcard.
 
 Each takes one or more webfinger addresses:
 
@@ -18,3 +17,12 @@ Each takes one or more webfinger addresses:
 or 
 
     ./profile cdent@tiddlyspace.com
+
+This code makes no particular effort to be super efficient, but it 
+does try to be relatively simple and dependency free.
+
+TODO:
+
+Thus far all the code performs only read only activities. Nothing is
+being done for subscription, PuSHing to hubs, or doing anything with
+salmon. So all of that is a todo.

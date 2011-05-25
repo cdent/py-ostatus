@@ -1,13 +1,19 @@
-
-import httplib2
-import logging
+"""
+Methods for retrieving and parsing webfinger information.
+"""
 
 from xml.dom import minidom
 
-HTTP = httplib2.Http()
+from ostatus.fetcher import fetch
+
 
 class WebFingerError(Exception):
+    """
+    Raised when some kind of webfinger related error needs to
+    be reported.
+    """
     pass
+
 
 def finger(identifier):
     """
@@ -35,15 +41,10 @@ def finger(identifier):
 
 def _finger(uri):
     """Actual implementation of finger, now that we know where to look"""
-    response, content = HTTP.request(uri)
+    content = fetch(uri)
 
-    if response['status'] != '200':
-        logging.debug(response, content)
-        raise WebFingerError('bad status when fingering: %s' %
-                response['status'])
-    else:
-        doc = minidom.parseString(content).documentElement
-        return doc.getElementsByTagName('Link')
+    doc = minidom.parseString(content).documentElement
+    return doc.getElementsByTagName('Link')
 
 
 def parse_links(links):
@@ -66,9 +67,12 @@ def parse_host_meta(host_meta):
         if link.getAttribute('rel') == 'lrdd':
             template = link.getAttribute('template')
     return template
-        
+
 
 def parse_for_host(identifier):
+    """
+    Get the host portion of a webfinger address.
+    """
     domain = identifier.split('@')[1]
     return domain
 
@@ -76,14 +80,4 @@ def parse_for_host(identifier):
 def get_host_meta(host):
     """Ping a host for its host-meta file."""
     url = 'http://%s/.well-known/host-meta' % host
-
-    response, content = HTTP.request(url)
-
-    if response['status'] != '200':
-        logging.debug(response, content)
-        raise WebFingerError('bad status when fetch host-meta: %s' %
-                response['status'])
-    else:
-        return content
-
-
+    return fetch(url)

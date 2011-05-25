@@ -1,7 +1,14 @@
+"""
+Routines for finding and parsing an hcard in the content at a URI.
+"""
+
 
 from ostatus.fetcher import fetch
+from ostatus.webfinger import finger
 
 from xml.dom import minidom
+
+HCARD = 'http://microformats.org/profile/hcard'
 
 HCARD_ELEMENTS = ['fn', 'n', 'adr', 'agent', 'bday', 'category', 'class',
     'email', 'geo', 'key', 'label', 'logo', 'mailer', 'nickname', 'note',
@@ -9,24 +16,42 @@ HCARD_ELEMENTS = ['fn', 'n', 'adr', 'agent', 'bday', 'category', 'class',
     'title', 'tz', 'uid', 'url']
 
 
-def hcard(uri):
+def HcardError(Exception):
+    """
+    Problem getting or parsing hcard data.
+    """
+    pass
+
+
+def hcard(identifier):
     """
     Find the first hcard in a URI and parse it to usefulness.
     """
+    links = finger(identifier)
 
-    data = fetch(uri)
+    hcard_uri = None
+    for link in links:
+        if link['rel'] == HCARD:
+            data = fetch(link['href'])
+            break
+
+    if not data:
+        raise HcardError('no links to get data')
 
     body = (minidom.parseString(data).documentElement
             .getElementsByTagName('body')[0])
 
-
     vcard = _traverse_for_class(body, 'vcard', None)
-    data = _traverse_for_data(vcard)
+    data = _traverse_for_data(vcard, HCARD_ELEMENTS)
 
-    print data
     return data
 
-def _traverse_for_data(element, elements=HCARD_ELEMENTS):
+
+def _traverse_for_data(element, elements=None):
+    """
+    Get the data out of a node known to be a hcard property.
+    This is not efficient but it gets the job done.
+    """
     results = {}
     for klass in elements:
         node = _traverse_for_class(element, klass=klass)
@@ -38,6 +63,7 @@ def _traverse_for_data(element, elements=HCARD_ELEMENTS):
             results[klass] = data
 
     return results
+
 
 def _get_photo_src(node):
     """
@@ -67,7 +93,7 @@ def _get_data(node, href=False):
 
 def _traverse_for_class(element, klass='vcard', tracker=None):
     """
-    Traverse and element looking for the first element with a 
+    Traverse and element looking for the first element with a
     particular class name.
     """
     for node in element.childNodes:

@@ -1,7 +1,17 @@
+"""
+Atom related functions.
+"""
+
 
 from xml.dom import minidom
 
+
 def parse_feed(feed):
+    """
+    Parse an Atom feed to assemble a list of id,
+    title, content, updated dictionary based on the
+    entries in the feed.
+    """
     doc = minidom.parseString(feed).documentElement
 
     outputs = []

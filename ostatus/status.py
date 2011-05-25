@@ -1,24 +1,30 @@
-
-import httplib2
-
+"""
+Routines for finding the latest status of a webfinger address.
+"""
 from ostatus.webfinger import finger
 from ostatus.atom import parse_feed
+from ostatus.fetcher import fetch
 
 UPDATES_FROM = "http://schemas.google.com/g/2010#updates-from"
 
 
-HTTP = httplib2.Http()
-
 class StatusError(Exception):
+    """
+    Unable to get or parse the activity feed.
+    """
     pass
 
+
 def status(identifier):
+    """
+    Get the latest update from a webfinger address.
+    """
     links = finger(identifier)
 
     feed = None
     for link in links:
         if link['rel'] == UPDATES_FROM:
-            feed = _get_feed(link['href'])
+            feed = fetch(link['href'])
             break
 
     if not feed:
@@ -29,14 +35,3 @@ def status(identifier):
             return entries[0]
         else:
             raise StatusError('no data for %s' % identifier)
-
-def _get_feed(uri):
-    response, content = HTTP.request(uri)
-
-    if response['status'] != '200':
-        logging.debug(response, content)
-        raise StatusError('bad status when fetching status feed: %s' %
-                response['status'])
-    else:
-        return content
-

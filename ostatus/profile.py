@@ -1,36 +1,34 @@
+"""
+Profile fetching and processing.
+"""
 
-import httplib2
-
+from ostatus.fetcher import fetch
 from ostatus.webfinger import finger
 
 PROFILE = "http://webfinger.net/rel/profile-page"
 
-HTTP = httplib2.Http()
 
 class ProfileError(Exception):
+    """
+    Report an error trying to fetch or process a profile.
+    """
     pass
 
+
 def profile(identifier):
+    """
+    Given a webfinger address, find the profile page,
+    and fetch that.
+    """
     links = finger(identifier)
 
-    profile = None
+    profile_data = None
     for link in links:
         if link['rel'] == PROFILE:
-            profile = _get_data(link['href'])
+            profile_data = fetch(link['href'])
             break
 
-    if not profile:
+    if not profile_data:
         raise ProfileError('no links found to get profile')
     else:
-        return profile
-
-def _get_data(uri):
-    response, content = HTTP.request(uri)
-
-    if response['status'] != '200':
-        logging.debug(response, content)
-        raise StatusError('bad status when fetching profile data: %s' %
-                response['status'])
-    else:
-        return content
-
+        return profile_data
