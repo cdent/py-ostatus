@@ -17,11 +17,11 @@ class HTTPError(Exception):
     pass
 
 
-def fetch(uri):
+def fetch(uri, headers=None):
     """
     Retrieve the content at uri.
     """
-    response, content = HTTP.request(uri)
+    response, content = HTTP.request(uri, headers=headers)
 
     if response['status'] != '200':
         logging.debug(response, content)

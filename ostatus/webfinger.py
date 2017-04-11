@@ -41,7 +41,7 @@ def finger(identifier):
 
 def _finger(uri):
     """Actual implementation of finger, now that we know where to look"""
-    content = fetch(uri)
+    content = fetch(uri, headers={'Accept': 'application/xrd+xml'})
 
     doc = minidom.parseString(content).documentElement
     return doc.getElementsByTagName('Link')
